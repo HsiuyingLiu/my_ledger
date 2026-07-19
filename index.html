@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#EDE8E0">
+<title>記帳本 2026</title>
+<style>
+  :root{
+    /* Morandi 色系 tokens */
+    --bg:#EDE8E0;
+    --bg-soft:#E4DED3;
+    --card:#F8F5EF;
+    --card-alt:#FBF9F5;
+    --ink:#3C3730;
+    --ink-soft:#6E675C;
+    --ink-faint:#9A9284;
+    --line:#DCD3C4;
+    --line-soft:#E8E1D3;
+    --accent:#8C7862;
+    --accent-dark:#6F5D4B;
+    --accent-soft:#DCCFBC;
+    --danger:#B06A5F;
+    --danger-soft:#EBD9D4;
+    --positive:#7D8F72;
+    --white:#FFFFFF;
+
+    /* 類別色 */
+    --c-food:#C79A4E;
+    --c-transport:#6F9C93;
+    --c-home:#B48468;
+    --c-medical:#8D7FA8;
+    --c-personal:#BD8188;
+    --c-utility:#7FA080;
+    --c-fun:#CE9A5E;
+    --c-learn:#6E86A3;
+    --c-tax:#9C8F76;
+    --c-finance:#93789A;
+    --c-other:#9C9686;
+
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+    --shadow-card: 0 2px 10px rgba(60,55,48,0.08);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
+    font-size:17px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding-bottom: calc(72px + var(--safe-bottom));
+  }
+
+  h1,h2,h3{margin:0; font-weight:700; color:var(--ink);}
+
+  /* Header */
+  .app-header{
+    position:sticky; top:0; z-index:20;
+    background:var(--bg);
+    padding:18px 20px 10px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .app-header .brand{
+    font-size:20px; font-weight:800; letter-spacing:0.5px; color:var(--ink);
+    display:flex; align-items:center; gap:8px;
+  }
+  .app-header .brand .dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--accent);
+    display:inline-block;
+  }
+  .app-header .sub{font-size:13px; color:var(--ink-faint);}
+
+  main{padding: 4px 16px 24px;}
+
+  .screen{display:none; animation:fadeIn .25s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .card{
+    background:var(--card);
+    border-radius:var(--radius-lg);
+    padding:18px;
+    box-shadow:var(--shadow-card);
+    margin-bottom:16px;
+    border:1px solid var(--line-soft);
+  }
+
+  /* Form elements */
+  label.field-label{
+    display:block; font-size:14px; font-weight:700; color:var(--ink-soft);
+    margin:0 0 8px 2px; letter-spacing:0.3px;
+  }
+  .field{margin-bottom:20px;}
+  .field:last-child{margin-bottom:0;}
+
+  input[type=date], input[type=text], input[type=number], textarea{
+    width:100%;
+    background:var(--card-alt);
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-md);
+    padding:14px 14px;
+    font-size:17px;
+    color:var(--ink);
+    font-family:inherit;
+    outline:none;
+    transition:border-color .15s;
+  }
+  input:focus, textarea:focus{border-color:var(--accent);}
+  textarea{resize:none; min-height:52px;}
+
+  .amount-input-wrap{position:relative;}
+  .amount-input-wrap .cur{
+    position:absolute; left:16px; top:50%; transform:translateY(-50%);
+    color:var(--ink-soft); font-size:20px; font-weight:700;
+  }
+  .amount-input-wrap input{
+    padding-left:36px; font-size:26px; font-weight:800; letter-spacing:0.5px;
+    height:58px;
+  }
+
+  .chip-grid{display:flex; flex-wrap:wrap; gap:9px;}
+  .chip{
+    padding:10px 15px;
+    border-radius:999px;
+    background:var(--card-alt);
+    border:1.5px solid var(--line);
+    color:var(--ink-soft);
+    font-size:15px; font-weight:600;
+    cursor:pointer;
+    display:flex; align-items:center; gap:7px;
+    user-select:none;
+    transition:all .12s;
+  }
+  .chip .swatch{width:9px;height:9px;border-radius:50%; flex-shrink:0;}
+  .chip.selected{
+    background:var(--ink); border-color:var(--ink); color:#fff;
+  }
+  .chip.selected .swatch{ box-shadow:0 0 0 2px rgba(255,255,255,0.6);}
+  .chip:active{transform:scale(0.96);}
+
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%;
+    padding:16px;
+    border-radius:var(--radius-md);
+    border:none;
+    font-size:17px; font-weight:800;
+    cursor:pointer;
+    font-family:inherit;
+    letter-spacing:0.3px;
+  }
+  .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-primary:active{ background:var(--accent-dark); }
+  .btn-secondary{ background:var(--card-alt); color:var(--ink); border:1.5px solid var(--line); }
+  .btn-danger{ background:var(--danger-soft); color:var(--danger); }
+  .btn-row{display:flex; gap:10px;}
+  .btn-row .btn{flex:1;}
+  .btn-sm{padding:10px 14px; font-size:14px; width:auto;}
+
+  /* Bottom nav */
+  .tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:30;
+    background:var(--card);
+    border-top:1px solid var(--line-soft);
+    display:flex;
+    padding-bottom: var(--safe-bottom);
+    box-shadow:0 -2px 12px rgba(60,55,48,0.06);
+  }
+  .tab-btn{
+    flex:1; background:none; border:none; padding:10px 4px 8px;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    color:var(--ink-faint); font-family:inherit; cursor:pointer;
+  }
+  .tab-btn svg{width:23px; height:23px; stroke:var(--ink-faint); fill:none; stroke-width:1.8;}
+  .tab-btn span{font-size:11px; font-weight:700;}
+  .tab-btn.active{color:var(--accent-dark);}
+  .tab-btn.active svg{stroke:var(--accent-dark);}
+
+  /* Month record list */
+  .month-switcher{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .month-switcher .arrow-btn{
+    width:40px; height:40px; border-radius:50%;
+    background:var(--card); border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .month-switcher .arrow-btn svg{width:18px; height:18px; stroke:var(--ink); fill:none; stroke-width:2.2;}
+  .month-switcher .title{font-size:19px; font-weight:800; text-align:center;}
+  .month-switcher .title .yr{font-size:13px; color:var(--ink-faint); font-weight:600; display:block;}
+
+  .total-banner{
+    background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    border-radius:var(--radius-lg);
+    padding:20px 22px;
+    color:#fff;
+    margin-bottom:16px;
+    box-shadow:var(--shadow-card);
+  }
+  .total-banner .label{font-size:13px; opacity:0.85; font-weight:600; letter-spacing:0.5px;}
+  .total-banner .amount{font-size:34px; font-weight:800; margin-top:4px; letter-spacing:0.3px;}
+  .total-banner .meta{font-size:12.5px; opacity:0.8; margin-top:6px;}
+
+  .day-group{margin-bottom:6px;}
+  .day-label{
+    font-size:13px; font-weight:700; color:var(--ink-faint);
+    margin:16px 2px 8px; display:flex; justify-content:space-between;
+  }
+  .tx-row{
+    background:var(--card); border-radius:var(--radius-md);
+    padding:13px 14px; margin-bottom:8px;
+    display:flex; align-items:center; gap:12px;
+    border:1px solid var(--line-soft);
+    cursor:pointer;
+  }
+  .tx-row:active{background:var(--card-alt);}
+  .tx-dot{width:11px; height:11px; border-radius:50%; flex-shrink:0;}
+  .tx-mid{flex:1; min-width:0;}
+  .tx-cat{font-size:15.5px; font-weight:700; color:var(--ink);}
+  .tx-note{font-size:13.5px; color:var(--ink-faint); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .tx-pay{
+    font-size:11.5px; color:var(--ink-soft); background:var(--bg-soft);
+    padding:2px 8px; border-radius:999px; display:inline-block; margin-top:4px;
+  }
+  .tx-amt{font-size:17px; font-weight:800; color:var(--ink); white-space:nowrap;}
+  .empty-state{
+    text-align:center; padding:50px 20px; color:var(--ink-faint);
+  }
+  .empty-state svg{width:52px; height:52px; stroke:var(--ink-faint); fill:none; stroke-width:1.4; margin-bottom:10px;}
+  .empty-state .t{font-size:15px; font-weight:600;}
+
+  /* Bar chart */
+  .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:12px; cursor:pointer;}
+  .bar-row .m-label{width:38px; font-size:13.5px; font-weight:700; color:var(--ink-soft); flex-shrink:0;}
+  .bar-track{flex:1; background:var(--bg-soft); border-radius:8px; height:26px; position:relative; overflow:hidden;}
+  .bar-fill{
+    height:100%; border-radius:8px;
+    background:var(--accent-soft);
+    display:flex; align-items:center;
+    transition:width .4s ease;
+  }
+  .bar-row.selected .bar-fill{background:var(--accent);}
+  .bar-row.selected .m-label{color:var(--accent-dark);}
+  .bar-val{font-size:12px; font-weight:800; color:var(--ink); width:64px; text-align:right; flex-shrink:0;}
+  .bar-row.selected .bar-val{color:var(--accent-dark);}
+
+  .year-select-wrap{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+  select.year-select{
+    background:var(--card); border:1.5px solid var(--line); border-radius:999px;
+    padding:9px 16px; font-size:15px; font-weight:700; color:var(--ink);
+    font-family:inherit;
+  }
+
+  .section-title{font-size:16px; font-weight:800; margin:22px 2px 12px;}
+
+  /* Donut chart */
+  .donut-wrap{display:flex; justify-content:center; margin:6px 0 18px;}
+  .donut-center-label{font-size:12px; fill:var(--ink-faint); font-weight:700;}
+  .donut-center-amount{font-size:20px; fill:var(--ink); font-weight:800;}
+
+  .legend-row{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 4px; border-bottom:1px solid var(--line-soft);
+  }
+  .legend-row:last-child{border-bottom:none;}
+  .legend-dot{width:12px;height:12px;border-radius:50%; flex-shrink:0;}
+  .legend-name{flex:1; font-size:15px; font-weight:700;}
+  .legend-pct{font-size:13px; color:var(--ink-faint); width:46px; text-align:right;}
+  .legend-amt{font-size:15px; font-weight:800; width:80px; text-align:right;}
+
+  /* Settings */
+  .settings-item{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 2px; border-bottom:1px solid var(--line-soft);
+  }
+  .settings-item:last-child{border-bottom:none;}
+  .settings-item .s-title{font-size:15.5px; font-weight:700;}
+  .settings-item .s-desc{font-size:12.5px; color:var(--ink-faint); margin-top:2px;}
+  .stat-grid{display:flex; gap:10px; margin-bottom:16px;}
+  .stat-box{
+    flex:1; background:var(--card); border-radius:var(--radius-md);
+    padding:14px; text-align:center; border:1px solid var(--line-soft);
+  }
+  .stat-box .num{font-size:22px; font-weight:800; color:var(--accent-dark);}
+  .stat-box .lbl{font-size:12px; color:var(--ink-faint); margin-top:2px; font-weight:600;}
+
+  .toast{
+    position:fixed; left:50%; bottom:calc(90px + var(--safe-bottom));
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff;
+    padding:12px 22px; border-radius:999px;
+    font-size:14.5px; font-weight:700;
+    opacity:0; pointer-events:none;
+    transition:all .25s ease;
+    z-index:50;
+    white-space:nowrap;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .edit-banner{
+    background:var(--accent-soft); color:var(--accent-dark);
+    border-radius:var(--radius-md); padding:11px 14px;
+    font-size:13.5px; font-weight:700; margin-bottom:16px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .edit-banner button{
+    background:none; border:none; color:var(--accent-dark);
+    font-weight:800; font-size:13px; cursor:pointer; text-decoration:underline;
+  }
+
+  .file-input-hidden{display:none;}
+
+  ::selection{background:var(--accent-soft);}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="brand"><span class="dot"></span>記帳本</div>
+  <div class="sub" id="headerDate"></div>
+</div>
+
+<main>
+
+  <!-- ============ 輸入畫面 ============ -->
+  <section class="screen active" id="screen-input">
+    <div class="card">
+      <div id="editBanner" class="edit-banner" style="display:none;">
+        <span>正在編輯這筆紀錄</span>
+        <button id="cancelEditBtn">取消編輯</button>
+      </div>
+
+      <div class="field">
+        <label class="field-label">日期</label>
+        <input type="date" id="inpDate">
+      </div>
+
+      <div class="field">
+        <label class="field-label">消費金額</label>
+        <div class="amount-input-wrap">
+          <span class="cur">$</span>
+          <input type="number" id="inpAmount" inputmode="decimal" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">類別</label>
+        <div class="chip-grid" id="categoryChips"></div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">付費方式</label>
+        <div class="chip-grid" id="paymentChips"></div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">備註</label>
+        <input type="text" id="inpNote" placeholder="例如：全聯購物">
+      </div>
+
+      <div class="btn-row" id="saveBtnRow">
+        <button class="btn btn-primary" id="saveBtn">儲存</button>
+      </div>
+      <div class="btn-row" id="editExtraRow" style="display:none; margin-top:10px;">
+        <button class="btn btn-danger" id="deleteBtn">刪除這筆</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 本月紀錄畫面 ============ -->
+  <section class="screen" id="screen-month">
+    <div class="month-switcher">
+      <div class="arrow-btn" id="prevMonthBtn"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="title"><span class="yr" id="monthYearLabel"></span><span id="monthLabel"></span></div>
+      <div class="arrow-btn" id="nextMonthBtn"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+
+    <div class="total-banner">
+      <div class="label">本月消費總額</div>
+      <div class="amount" id="monthTotalAmount">$0</div>
+      <div class="meta" id="monthTotalMeta">共 0 筆紀錄</div>
+    </div>
+
+    <div id="monthList"></div>
+  </section>
+
+  <!-- ============ 統計畫面 ============ -->
+  <section class="screen" id="screen-stats">
+    <div class="year-select-wrap">
+      <label class="field-label" style="margin:0;">年度：</label>
+      <select class="year-select" id="yearSelect"></select>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:16px;">全年支出統計（月）</h3>
+      <div id="yearBarChart"></div>
+    </div>
+
+    <div class="card" id="monthDonutCard">
+      <div class="total-banner" style="margin-bottom:18px;">
+        <div class="label" id="donutMonthLabel">—月消費總額</div>
+        <div class="amount" id="donutTotalAmount">$0</div>
+      </div>
+      <div class="donut-wrap" id="donutChartWrap"></div>
+      <div id="donutLegend"></div>
+    </div>
+  </section>
+
+  <!-- ============ 設定 / 匯出匯入 ============ -->
+  <section class="screen" id="screen-settings">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num" id="statCount">0</div><div class="lbl">總筆數</div></div>
+      <div class="stat-box"><div class="num" id="statTotal">0</div><div class="lbl">總支出</div></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:6px;">匯出資料</h3>
+      <p style="font-size:13px; color:var(--ink-faint); margin:0 0 14px;">建議先匯出存到 iCloud，方便在電腦上用 Excel 開啟檢視。</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="exportXlsxBtn">匯出 Excel (.xlsx)</button>
+      </div>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-secondary" id="exportCsvBtn">匯出 CSV</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:6px;">匯入資料</h3>
+      <p style="font-size:13px; color:var(--ink-faint); margin:0 0 14px;">可匯入 .xlsx 或 .csv 檔案（欄位：日期、消費金額、類別、備註、付費方式），新資料會加入現有紀錄中。</p>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="importBtn">選擇檔案匯入</button>
+      </div>
+      <input type="file" id="importFileInput" class="file-input-hidden" accept=".xlsx,.xls,.csv">
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:6px; color:var(--danger);">清除資料</h3>
+      <p style="font-size:13px; color:var(--ink-faint); margin:0 0 14px;">將刪除裝置上所有記帳紀錄，請先匯出備份。此動作無法復原。</p>
+      <div class="btn-row">
+        <button class="btn btn-danger" id="clearAllBtn">清除全部資料</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="tabbar">
+  <button class="tab-btn active" data-tab="input">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+    <span>記一筆</span>
+  </button>
+  <button class="tab-btn" data-tab="month">
+    <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4" stroke-linecap="round"/></svg>
+    <span>本月</span>
+  </button>
+  <button class="tab-btn" data-tab="stats">
+    <svg viewBox="0 0 24 24"><path d="M5 19V10M12 19V5M19 19v-7" stroke-linecap="round"/></svg>
+    <span>統計</span>
+  </button>
+  <button class="tab-btn" data-tab="settings">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.6 7.6 0 000-3l1.8-1.4-2-3.4-2.1.6a7.7 7.7 0 00-2.6-1.5L14 2.5h-4l-.5 2.3a7.7 7.7 0 00-2.6 1.5l-2.1-.6-2 3.4L4.6 10.5a7.6 7.6 0 000 3L2.8 14.9l2 3.4 2.1-.6a7.7 7.7 0 002.6 1.5L10 21.5h4l.5-2.3a7.7 7.7 0 002.6-1.5l2.1.6 2-3.4z" stroke-linejoin="round"/></svg>
+    <span>設定</span>
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+window.SEED_DATA = [{"date":"2026-01-02","amount":2094.0,"category":"水電瓦斯電信","note":"陽明山有線電視","payment":"momo 卡"},{"date":"2026-01-02","amount":90.0,"category":"交通","note":"榮總40 西安街買菜50","payment":"momo 卡"},{"date":"2026-01-02","amount":40.0,"category":"交通","note":"到馬偕照X光 正好停出口不開","payment":"momo 卡"},{"date":"2026-01-02","amount":530.0,"category":"食物","note":"米420元，紅豆110元","payment":"現金"},{"date":"2026-01-02","amount":0.0,"category":"住家","note":"$24500, 松江長春大樓冷氣架 轉帳。爸爸轉回給我","payment":"現金"},{"date":"2026-01-02","amount":2490.0,"category":"保險稅賦","note":"國民年金 台新銀扣款","payment":"現金"},{"date":"2026-01-03","amount":19.0,"category":"交通","note":"白巷子吃早餐停車","payment":"現金"},{"date":"2026-01-05","amount":250.0,"category":"食物","note":"雙連買麻花100元，雞捲150元","payment":"現金"},{"date":"2026-01-05","amount":80.0,"category":"交通","note":"馬偕回診正好停","payment":"momo 卡"},{"date":"2026-01-06","amount":317.0,"category":"住家","note":"特力屋買燈泡","payment":"momo 卡"},{"date":"2026-01-07","amount":48.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-01-07","amount":3672.0,"category":"食物","note":"好市多購物","payment":"好市多卡"},{"date":"2026-01-08","amount":100.0,"category":"交通","note":"正好停馬偕","payment":"賓士卡"},{"date":"2026-01-08","amount":55.0,"category":"住家","note":"咖啡紙","payment":"中信高島屋卡"},{"date":"2026-01-08","amount":90.0,"category":"食物","note":"燒仙草","payment":"中信高島屋卡"},{"date":"2026-01-08","amount":0.0,"category":"住家","note":"$106000, 整棟油漆, 由富邦銀匯款, 爸又轉給我","payment":"現金"},{"date":"2026-01-08","amount":298.0,"category":"食物","note":"團購雞翅和茶 富邦銀轉帳","payment":"現金"},{"date":"2026-01-09","amount":2904.0,"category":"水電瓦斯電信","note":"有線電視扣款","payment":""},{"date":"2026-01-09","amount":45.0,"category":"交通","note":"濱江市場停車","payment":"momo 卡"},{"date":"2026-01-12","amount":60.0,"category":"交通","note":"力康停車","payment":"悠遊卡"},{"date":"2026-01-12","amount":100.0,"category":"醫療","note":"陽明醫院洗牙","payment":"賓士卡"},{"date":"2026-01-12","amount":40.0,"category":"交通","note":"陽明醫院停車","payment":"悠遊卡"},{"date":"2026-01-14","amount":1562.0,"category":"娛樂交誼","note":"帶爸媽到碧潭泰國餐","payment":"momo 卡"},{"date":"2026-01-14","amount":90.0,"category":"娛樂交誼","note":"碧潭新店捷運站停車","payment":"賓士卡"},{"date":"2026-01-14","amount":30.0,"category":"食物","note":"豆腐","payment":"現金"},{"date":"2026-01-15","amount":826.0,"category":"保險稅賦","note":"11月健保費","payment":"賓士卡"},{"date":"2026-01-15","amount":10000.0,"category":"住家","note":"瑞典茶几 國泰世華轉帳","payment":"現金"},{"date":"2026-01-15","amount":273.0,"category":"食物","note":"全聯購物","payment":"賓士卡"},{"date":"2026-01-16","amount":29.0,"category":"交通","note":"大直街停車（買桌子）","payment":"賓士卡"},{"date":"2026-01-16","amount":850.0,"category":"個人項目","note":"買衣服","payment":"現金"},{"date":"2026-01-19","amount":160.0,"category":"食物","note":"麵包","payment":"現金"},{"date":"2026-01-19","amount":80.0,"category":"交通","note":"榮總停車","payment":""},{"date":"2026-01-21","amount":338.0,"category":"食物","note":"IKEA 羊肉和雞翅","payment":"賓士卡"},{"date":"2026-01-21","amount":928.0,"category":"交通","note":"台亞加油","payment":"賓士卡"},{"date":"2026-01-22","amount":529.0,"category":"食物","note":"全聯買咖啡和食物","payment":"賓士卡"},{"date":"2026-01-23","amount":2342.0,"category":"食物","note":"好市多購物","payment":"好市多卡"},{"date":"2026-01-23","amount":80.0,"category":"交通","note":"榮總做心臟超音波停車","payment":"賓士卡"},{"date":"2026-01-25","amount":75.0,"category":"交通","note":"Uber","payment":"賓士卡"},{"date":"2026-01-25","amount":60.0,"category":"交通","note":"大安森林停車","payment":"賓士卡"},{"date":"2026-01-26","amount":91.0,"category":"水電瓦斯電信","note":"iCloud","payment":"賓士卡"},{"date":"2026-01-26","amount":649.0,"category":"娛樂交誼","note":"和東川友吃肉之間火鍋","payment":"現金"},{"date":"2026-01-26","amount":0.0,"category":"其他","note":"Anna 健保費3654","payment":"賓士卡"},{"date":"2026-01-27","amount":340.0,"category":"食物","note":"麥當勞3人午餐","payment":"賓士卡"},{"date":"2026-01-27","amount":90.0,"category":"食物","note":"蔬菜","payment":"現金"},{"date":"2026-01-27","amount":30.0,"category":"食物","note":"豆腐","payment":"現金"},{"date":"2026-01-28","amount":420.0,"category":"醫療","note":"榮總心臟科回診","payment":"賓士卡"},{"date":"2026-01-28","amount":200.0,"category":"交通","note":"榮總早上下午各停車一次","payment":"賓士卡"},{"date":"2026-01-28","amount":50.0,"category":"交通","note":"華榮市場停車","payment":"悠遊卡"},{"date":"2026-01-29","amount":194.0,"category":"食物","note":"豐原麵包","payment":"現金"},{"date":"2026-01-30","amount":399.0,"category":"食物","note":"蜂巢蛋糕","payment":"現金"},{"date":"2026-01-31","amount":50.0,"category":"食物","note":"麵包","payment":""},{"date":"2026-02-02","amount":140.0,"category":"交通","note":"力康停車","payment":"悠遊卡"},{"date":"2026-02-02","amount":2660.0,"category":"娛樂交誼","note":"力康重訓費用","payment":"賓士卡"},{"date":"2026-02-03","amount":14.0,"category":"交通","note":"停車 1/31","payment":""},{"date":"2026-02-04","amount":682.0,"category":"交通","note":"台亞加油","payment":"賓士卡"},{"date":"2026-02-04","amount":0.0,"category":"娛樂交誼","note":"帶阿姨去碧潭碳烤鐵人 ＄1331","payment":"賓士卡"},{"date":"2026-02-04","amount":16000.0,"category":"娛樂交誼","note":"報名基隆淡水旅遊2人 富邦轉帳","payment":"現金"},{"date":"2026-02-04","amount":86.0,"category":"交通","note":"萬華停車","payment":""},{"date":"2026-02-07","amount":700.0,"category":"住家","note":"台糖蘭花","payment":"現金"},{"date":"2026-02-07","amount":70.0,"category":"交通","note":"蘭雅公園、石牌國小停車","payment":"賓士卡"},{"date":"2026-02-07","amount":623.0,"category":"食物","note":"蝦皮買梅問屋梅子","payment":"賓士卡"},{"date":"2026-02-09","amount":420.0,"category":"食物","note":"雜貨店10斤米","payment":"現金"},{"date":"2026-02-09","amount":176.0,"category":"食物","note":"岩島城麵包","payment":"中信高島屋卡"},{"date":"2026-02-09","amount":60.0,"category":"交通","note":"力康停車","payment":"悠遊卡"},{"date":"2026-02-10","amount":6513.0,"category":"食物","note":"好市多購物 已折抵99元","payment":"好市多卡"},{"date":"2026-02-10","amount":237.0,"category":"食物","note":"好市多熟食","payment":"好市多卡"},{"date":"2026-02-10","amount":618.0,"category":"食物","note":"全聯購物","payment":"賓士卡"},{"date":"2026-02-11","amount":165.0,"category":"食物","note":"朱家排骨麵午餐","payment":"momo 卡"},{"date":"2026-02-12","amount":14.0,"category":"交通","note":"到天母國泰世華停車","payment":"賓士卡"},{"date":"2026-02-17","amount":660.0,"category":"食物","note":"池先生2人午餐","payment":"momo 卡"},{"date":"2026-02-17","amount":40.0,"category":"交通","note":"芝玉路","payment":""},{"date":"2026-02-17","amount":45.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-02-19","amount":500.0,"category":"個人項目","note":"惠濟宮安太歲","payment":"現金"},{"date":"2026-02-21","amount":30.0,"category":"交通","note":"","payment":""},{"date":"2026-02-22","amount":998.0,"category":"水電瓦斯電信","note":"台哥大兩個月費用","payment":"momo 卡"},{"date":"2026-02-22","amount":0.0,"category":"個人項目","note":"8184元 佳能增資款，由富邦轉帳","payment":""},{"date":"2026-02-23","amount":80.0,"category":"交通","note":"力康停車","payment":"悠遊卡"},{"date":"2026-02-24","amount":218.0,"category":"住家","note":"燈泡2個","payment":"momo 卡"},{"date":"2026-02-24","amount":60.0,"category":"交通","note":"七星停車場","payment":"賓士卡"},{"date":"2026-02-25","amount":1700.0,"category":"娛樂交誼","note":"同學會","payment":"現金"},{"date":"2026-02-28","amount":43.0,"category":"交通","note":43,"payment":""},{"date":"2026-02-28","amount":756.0,"category":"食物","note":"全聯 燦坤卡","payment":""},{"date":"2026-02-28","amount":2490.0,"category":"保險稅賦","note":"11-12 月國民年金 / 台新銀行帳戶自動扣款","payment":""},{"date":"2026-03-03","amount":304.0,"category":"個人項目","note":"樂天買日本雜誌","payment":""},{"date":"2026-03-04","amount":5334.0,"category":"交通","note":"BJX-5993 維修","payment":""},{"date":"2026-03-05","amount":2859.0,"category":"食物","note":"好市多購物","payment":""},{"date":"2026-03-07","amount":86.0,"category":"交通","note":"北投社大停車","payment":""},{"date":"2026-03-16","amount":826.0,"category":"保險稅賦","note":"1月全民健保","payment":"賓士卡"},{"date":"2026-03-20","amount":60.0,"category":"交通","note":"士林官邸停車","payment":""},{"date":"2026-03-22","amount":40.0,"category":"交通","note":"停車","payment":""},{"date":"2026-03-25","amount":48.0,"category":"交通","note":"萬華停車","payment":""},{"date":"2026-03-25","amount":250.0,"category":"醫療","note":"佳音診所看鼻喉","payment":""},{"date":"2026-03-26","amount":185.0,"category":"食物","note":"早餐 Q burger","payment":""},{"date":"2026-03-26","amount":14.0,"category":"交通","note":"佳恩看診停車","payment":""},{"date":"2026-03-26","amount":150.0,"category":"交通","note":"陽明醫院停車 爸老人健檢","payment":""},{"date":"2026-03-26","amount":91.0,"category":"水電瓦斯電信","note":"iCloud","payment":""},{"date":"2026-03-29","amount":848.0,"category":"交通","note":"加油","payment":""},{"date":"2026-03-30","amount":140.0,"category":"交通","note":"力康停車","payment":""},{"date":"2026-03-30","amount":228.0,"category":"食物","note":"岩島城麵包","payment":""},{"date":"2026-03-30","amount":250.0,"category":"醫療","note":"力康復健看診","payment":""},{"date":"2026-03-31","amount":320.0,"category":"食物","note":"買菜 ，蔬菜120，椰漿兩瓶170，豆腐30","payment":""},{"date":"2026-04-01","amount":19.0,"category":"交通","note":"萬華排班停車","payment":""},{"date":"2026-04-02","amount":3766.0,"category":"食物","note":"好市多購物","payment":""},{"date":"2026-04-03","amount":913.0,"category":"食物","note":"笑欸cafe 頭城店","payment":""},{"date":"2026-04-07","amount":500.0,"category":"水電瓦斯電信","note":"台哥大月費","payment":"momo 卡"},{"date":"2026-04-08","amount":10.0,"category":"交通","note":"吃麵線停車","payment":"賓士卡"},{"date":"2026-04-08","amount":380.0,"category":"食物","note":"團購取貨","payment":""},{"date":"2026-04-08","amount":380.0,"category":"食物","note":"團購燻鮭魚","payment":"現金"},{"date":"2026-04-08","amount":820.0,"category":"個人項目","note":"蝦皮購買染髮劑和亞麻籽","payment":"momo 卡"},{"date":"2026-04-08","amount":51.0,"category":"交通","note":"宜蘭ETC","payment":"momo 卡"},{"date":"2026-04-10","amount":19.0,"category":"交通","note":"停車","payment":"賓士卡"},{"date":"2026-04-10","amount":346.0,"category":"交通","note":"Uber","payment":"賓士卡"},{"date":"2026-04-11","amount":67.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-04-11","amount":2375.0,"category":"娛樂交誼","note":"翠林越南餐廳","payment":"現金"},{"date":"2026-04-13","amount":530.0,"category":"食物","note":"越式午餐","payment":"現金"},{"date":"2026-04-13","amount":2993.0,"category":"娛樂交誼","note":"力康健身5-6月","payment":"momo 卡"},{"date":"2026-04-13","amount":60.0,"category":"交通","note":"力康停車","payment":"悠遊卡"},{"date":"2026-04-13","amount":50.0,"category":"交通","note":"陪爸陽明醫院回診停車","payment":""},{"date":"2026-04-15","amount":2380.0,"category":"學習成長","note":"報名染渲森森水彩網課","payment":""},{"date":"2026-04-16","amount":826.0,"category":"保險稅賦","note":"2月 健保費","payment":"賓士卡"},{"date":"2026-04-16","amount":90.0,"category":"水電瓦斯電信","note":"iCloud 月費","payment":"賓士卡"},{"date":"2026-04-17","amount":38.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-04-17","amount":972.0,"category":"交通","note":"加油","payment":"momo 卡"},{"date":"2026-04-20","amount":296.0,"category":"食物","note":"梁社漢便當","payment":"momo 卡"},{"date":"2026-04-20","amount":15.0,"category":"交通","note":"芝山站買便當當停車","payment":"momo 卡"},{"date":"2026-04-20","amount":2200.0,"category":"醫療","note":"力康復健徒手治療","payment":"momo 卡"},{"date":"2026-04-23","amount":7120.0,"category":"保險稅賦","note":"牌照稅","payment":"momo 卡"},{"date":"2026-04-24","amount":420.0,"category":"食物","note":"米","payment":"現金"},{"date":"2026-04-24","amount":25.0,"category":"食物","note":"豆乾","payment":"現金"},{"date":"2026-04-24","amount":109.0,"category":"食物","note":"咖哩","payment":"現金"},{"date":"2026-04-24","amount":3949.0,"category":"食物","note":"好市多購物","payment":"好市多卡"},{"date":"2026-04-25","amount":91.0,"category":"水電瓦斯電信","note":"iCloud 月費","payment":"賓士卡"},{"date":"2026-04-27","amount":2200.0,"category":"醫療","note":"復健","payment":"momo 卡"},{"date":"2026-04-27","amount":140.0,"category":"交通","note":"力康停車","payment":""},{"date":"2026-04-28","amount":460.0,"category":"食物","note":"小柏栗子蛋糕","payment":"現金"},{"date":"2026-04-30","amount":490.0,"category":"食物","note":"全聯電商購物，潔霜 泡麵 罐頭","payment":"國泰世華卡"},{"date":"2026-04-30","amount":2658.0,"category":"保險稅賦","note":"1-2月國民年金 / 台新帳戶自動扣繳","payment":""},{"date":"2026-04-30","amount":57.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-05-01","amount":430.0,"category":"食物","note":"巷子咖啡早餐","payment":"momo 卡"},{"date":"2026-05-01","amount":60.0,"category":"交通","note":"蘭雅停車","payment":"賓士卡"},{"date":"2026-05-02","amount":786.0,"category":"住家","note":"Hola 枕頭 拖鞋 毛巾","payment":"momo 卡"},{"date":"2026-05-03","amount":0.0,"category":"住家","note":"2890元，九陽破壁機，全聯購物. 已取消訂單","payment":"momo 卡"},{"date":"2026-05-04","amount":2200.0,"category":"醫療","note":"復健","payment":"momo 卡"},{"date":"2026-05-04","amount":30.0,"category":"交通","note":"嘟嘟房停車","payment":"momo 卡"},{"date":"2026-05-04","amount":2200.0,"category":"醫療","note":"復健","payment":"momo 卡"},{"date":"2026-05-06","amount":38.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-05-06","amount":959.0,"category":"交通","note":"加油","payment":"momo 卡"},{"date":"2026-05-06","amount":15.0,"category":"交通","note":"蘭雅停車場","payment":"賓士卡"},{"date":"2026-05-07","amount":484.0,"category":"個人項目","note":"迪卡儂購物，部分是信榮的","payment":"momo 卡"},{"date":"2026-05-07","amount":110.0,"category":"住家","note":"宜家家居","payment":"momo 卡"},{"date":"2026-05-08","amount":205.0,"category":"食物","note":"巷子早餐","payment":"momo 卡"},{"date":"2026-05-09","amount":0.0,"category":"娛樂交誼","note":"隱食家母親節聚餐，瑤芬已刷訂金. 樂活基金支付 / 總額是22000","payment":"momo 卡"},{"date":"2026-05-10","amount":71.0,"category":"個人項目","note":"Youtube super thanks to Shawna / 給網路復健師的donate","payment":"賓士卡"},{"date":"2026-05-11","amount":321.0,"category":"食物","note":"梁社漢便當","payment":"momo 卡"},{"date":"2026-05-11","amount":60.0,"category":"交通","note":"力康停車","payment":"悠遊卡"},{"date":"2026-05-11","amount":15.0,"category":"交通","note":"芝山站買便當停車","payment":"賓士卡"},{"date":"2026-05-11","amount":2200.0,"category":"醫療","note":"力康復健","payment":"momo 卡"},{"date":"2026-05-11","amount":7025.0,"category":"食物","note":"好市多購物","payment":"好市多卡"},{"date":"2026-05-13","amount":38.0,"category":"交通","note":"萬華排班停車","payment":"賓士卡"},{"date":"2026-05-14","amount":2632.0,"category":"住家","note":"九陽豆漿機","payment":"momo 卡"},{"date":"2026-05-16","amount":5757.0,"category":"學習成長","note":"Hahow 揪C的動力鏈課程","payment":"momo 卡"},{"date":"2026-05-17","amount":0.0,"category":"娛樂交誼","note":"隱食家母親節聚餐，由元大樂活基金轉3500給瑤芬，18500給我","payment":"momo 卡"},{"date":"2026-05-18","amount":680.0,"category":"食物","note":"高麗味乾烹雞和烤牛肉肉飯","payment":"momo 卡"},{"date":"2026-05-18","amount":60.0,"category":"交通","note":"力康停車","payment":"悠遊卡"},{"date":"2026-05-18","amount":2200.0,"category":"醫療","note":"力康復健","payment":"momo 卡"},{"date":"2026-05-18","amount":173.0,"category":"食物","note":"豐原麵包","payment":"現金"},{"date":"2026-05-18","amount":420.0,"category":"食物","note":"白米","payment":"現金"},{"date":"2026-05-19","amount":240.0,"category":"食物","note":"兩喜號 龍都冰果室 / 和孟萍約在萬華取鈣片。兩喜號用linepay 付帳，帳號竟然是兩洗生活單車","payment":""},{"date":"2026-05-19","amount":120.0,"category":"交通","note":"萬華公園停車 / 報所得稅，撥入台新帳號。報房屋稅","payment":""},{"date":"2026-05-20","amount":635.0,"category":"食物","note":"清河鵝肉","payment":"現金"},{"date":"2026-05-20","amount":29.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-05-20","amount":15.0,"category":"交通","note":"蘭雅公園買鵝肉","payment":""},{"date":"2026-05-22","amount":29.0,"category":"交通","note":"蘭雅買菜停車","payment":""},{"date":"2026-05-22","amount":1020.0,"category":"食物","note":"Plow早餐店 / 早上帶爸媽去榮總抽血，然後來吃早餐","payment":"momo 卡"},{"date":"2026-05-22","amount":863.0,"category":"交通","note":"台亞加油","payment":"momo 卡"},{"date":"2026-05-23","amount":29.0,"category":"交通","note":"雨農路停車","payment":"賓士卡"},{"date":"2026-05-24","amount":79.0,"category":"食物","note":"萊爾富購物","payment":"momo 卡"},{"date":"2026-05-25","amount":420.0,"category":"食物","note":"午餐 高麗味","payment":"momo 卡"},{"date":"2026-05-25","amount":60.0,"category":"交通","note":"力康停車","payment":"悠遊卡"},{"date":"2026-05-25","amount":2200.0,"category":"醫療","note":"力康復健","payment":"momo 卡"},{"date":"2026-05-25","amount":4352.0,"category":"食物","note":"好市多購物","payment":"好市多卡"},{"date":"2026-05-26","amount":275.0,"category":"食物","note":"麥當勞午餐","payment":"momo 卡"},{"date":"2026-05-27","amount":380.0,"category":"娛樂交誼","note":"郭怡美書店下午茶 / 到迪化街買包粽子的材料，吃完米苔目喝咖啡","payment":"momo 卡"},{"date":"2026-05-27","amount":315.0,"category":"學習成長","note":"讀墨買書 圖解壽司辭典","payment":"momo 卡"},{"date":"2026-05-28","amount":255.0,"category":"學習成長","note":"Momo買書台灣漫遊錄 / 用momo 點數全額扣","payment":""},{"date":"2026-05-28","amount":2700.0,"category":"住家","note":"隆美窗簾 還有尾款1000 / 到府丈量。6/9 來裝設","payment":"momo 卡"},{"date":"2026-05-28","amount":2658.0,"category":"保險稅賦","note":"3、4月健保費，台新銀扣繳","payment":""},{"date":"2026-05-28","amount":90.0,"category":"水電瓦斯電信","note":"iCloud","payment":""},{"date":"2026-05-28","amount":168.0,"category":"食物","note":"豐源麵包","payment":""},{"date":"2026-05-29","amount":1500.0,"category":"個人項目","note":"沈柏楊募款專戶","payment":"momo 卡"},{"date":"2026-05-29","amount":120.0,"category":"交通","note":"爸媽榮總回診停車","payment":"momo 卡"},{"date":"2026-05-30","amount":0.0,"category":"保險稅賦","note":"Ana 兩個月健保 3772元","payment":"momo 卡"},{"date":"2026-05-30","amount":0.0,"category":"保險稅賦","note":"Ana 勞保 富邦轉帳","payment":""},{"date":"2026-05-30","amount":29.0,"category":"交通","note":"看窗簾 德行東路停車","payment":"賓士卡"},{"date":"2026-06-01","amount":410.0,"category":"食物","note":"鬍鬚張滷肉飯便當","payment":"momo 卡"},{"date":"2026-06-01","amount":1097.0,"category":"交通","note":"台亞加油","payment":"momo 卡"},{"date":"2026-06-01","amount":60.0,"category":"交通","note":"力康停車","payment":""},{"date":"2026-06-01","amount":20.0,"category":"交通","note":"芝山站買便當當停車","payment":""},{"date":"2026-06-01","amount":772.0,"category":"個人項目","note":"寶雅化妝品","payment":"中信高島屋卡"},{"date":"2026-06-02","amount":2700.0,"category":"交通","note":"汽車保養 / 原三新汽車換老闆，正在整理階段","payment":"momo 卡"},{"date":"2026-06-02","amount":200.0,"category":"食物","note":"美麗華叻沙午餐","payment":""},{"date":"2026-06-02","amount":989.0,"category":"個人項目","note":"美麗華無印買洗髮精  bratop","payment":"momo 卡"},{"date":"2026-06-03","amount":0.0,"category":"娛樂交誼","note":"雄獅旅遊 合歡山之旅 2人訂金 / 一人5600元總額，消費另計。因天氣不佳，決定取消，被扣錢","payment":"賓士卡"},{"date":"2026-06-05","amount":0.0,"category":"金融","note":"國泰世華視訊設定約定轉帳","payment":""},{"date":"2026-06-06","amount":1100.0,"category":"娛樂交誼","note":"子瑄生日蛋糕","payment":"賓士卡"},{"date":"2026-06-07","amount":500.0,"category":"娛樂交誼","note":"合歡山尾款 / 媽媽的旅費刷兆豐卡","payment":"賓士卡"},{"date":"2026-06-08","amount":357.0,"category":"食物","note":"松屋午餐 / 新開幕送保溫提袋","payment":"賓士卡"},{"date":"2026-06-08","amount":15.0,"category":"交通","note":"芝山站買便當停車","payment":"賓士卡"},{"date":"2026-06-08","amount":998.0,"category":"水電瓦斯電信","note":"台哥大兩月費用","payment":"momo 卡"},{"date":"2026-06-10","amount":29.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-06-11","amount":90.0,"category":"食物","note":"高島屋滋粒燒仙草","payment":"中信高島屋卡"},{"date":"2026-06-15","amount":2835.0,"category":"娛樂交誼","note":"力康7、8月 / 壽星打9折","payment":"賓士卡"},{"date":"2026-06-15","amount":1500.0,"category":"個人項目","note":"捐款給曾玟學選頭份市長 / 在苗栗很有勇氣奮戰的年輕人。支持他選頭份市長","payment":"賓士卡"},{"date":"2026-06-15","amount":260.0,"category":"食物","note":"午餐便當2個","payment":"現金"},{"date":"2026-06-17","amount":38.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-06-17","amount":110.0,"category":"交通","note":"從士東市場回家","payment":"賓士卡"},{"date":"2026-06-17","amount":826.0,"category":"保險稅賦","note":"全民健保費","payment":"賓士卡"},{"date":"2026-06-19","amount":24.0,"category":"交通","note":"停車","payment":"賓士卡"},{"date":"2026-06-22","amount":283.0,"category":"食物","note":"午餐梁社漢便當兩個","payment":"賓士卡"},{"date":"2026-06-22","amount":95.0,"category":"交通","note":"力康停車80，芝山停車15","payment":"賓士卡"},{"date":"2026-06-22","amount":980.0,"category":"交通","note":"加油","payment":"賓士卡"},{"date":"2026-06-22","amount":2100.0,"category":"學習成長","note":"北投社大天文觀星 / 現場報名，花了兩個多小時。網路報名還要晚兩天。","payment":"現金"},{"date":"2026-06-22","amount":683.0,"category":"食物","note":"全聯購物","payment":"賓士卡"},{"date":"2026-06-23","amount":246.0,"category":"食物","note":"陽明山午餐 / 到","payment":"賓士卡"},{"date":"2026-06-23","amount":305.0,"category":"食物","note":"仙草 / 路過福林國小，信榮上次要的仙草有開，就去買。是客家人自己熬的仙草","payment":"現金"},{"date":"2026-06-23","amount":80.0,"category":"食物","note":"豆腐豆乾","payment":"現金"},{"date":"2026-06-23","amount":155.0,"category":"食物","note":"豐源麵包 / 去得較晚，吐司全空，老闆挪一個代冰的給我","payment":"現金"},{"date":"2026-06-24","amount":29.0,"category":"交通","note":"萬華排班停車","payment":"賓士卡"},{"date":"2026-06-24","amount":390.0,"category":"食物","note":"頂山買竹筍小黃瓜 / 去冰冰水午餐，去看看有沒賣草仔粿，買到兩個冷凍的","payment":"現金"},{"date":"2026-06-24","amount":49.0,"category":"食物","note":"杜老爺甜筒","payment":"賓士卡"},{"date":"2026-06-26","amount":1631.0,"category":"食物","note":"醬油一箱 / 漲價了，錢是快遞代收","payment":"現金"},{"date":"2026-06-27","amount":50.0,"category":"交通","note":"陽明醫院停車 / 媽去看甲狀腺和中醫，我去里長處拿回饋金","payment":"悠遊卡"},{"date":"2026-06-28","amount":0.0,"category":"娛樂交誼","note":"下午到河濱運動一下，真的非常久沒有去過。草亂又長都沒在割。往回走時下起傾盆大雨，全身濕透，到雨農橋下避雨，大概有10個人跟我一樣。等了快一小時還是很大，決定衝了。小跑步了一下，很涼快完全不喘，其實雨天跑步不錯","payment":""},{"date":"2026-06-30","amount":2658.0,"category":"保險稅賦","note":"3-4月國民年金 / 台新帳戶自動扣款","payment":""},{"date":"2026-06-30","amount":0.0,"category":"個人項目","note":"信榮音樂劇6張票 $8150，含掛號。","payment":"momo 卡"},{"date":"2026-06-30","amount":16365.0,"category":"娛樂交誼","note":"雄獅旅行社訂到福岡機票 / 8/13-8/20","payment":"賓士卡"},{"date":"2026-06-30","amount":103.0,"category":"食物","note":"全聯買運動飲 八寶粥","payment":"賓士卡"},{"date":"2026-07-01","amount":1148.0,"category":"交通","note":"加油","payment":"賓士卡"},{"date":"2026-07-01","amount":29.0,"category":"交通","note":"萬華停車","payment":"賓士卡"},{"date":"2026-07-01","amount":2094.0,"category":"水電瓦斯電信","note":"陽明山有線","payment":"momo 卡"},{"date":"2026-07-01","amount":4800.0,"category":"交通","note":"道路養管費","payment":""},{"date":"2026-07-03","amount":75.0,"category":"交通","note":"華榮國宅停車","payment":"悠遊卡"},{"date":"2026-07-04","amount":238.0,"category":"食物","note":"全聯購物","payment":"賓士卡"},{"date":"2026-07-04","amount":670.0,"category":"娛樂交誼","note":"小柏布丁17個 linepay","payment":""},{"date":"2026-07-07","amount":3637.0,"category":"個人項目","note":"Flip flop 鞋子","payment":"中信高島屋卡"},{"date":"2026-07-08","amount":183.0,"category":"食物","note":"家樂福買菜","payment":"國泰世華卡"},{"date":"2026-07-09","amount":1230.0,"category":"個人項目","note":"芳姿滴雞精","payment":"國泰世華卡"},{"date":"2026-07-11","amount":1580.0,"category":"個人項目","note":"買倍速益給媽，一箱24瓶高鈣無糖原味","payment":"momo 卡"},{"date":"2026-07-11","amount":165.0,"category":"水電瓦斯電信","note":"訂閱google AI plus 每月扣款","payment":"momo 卡"},{"date":"2026-07-13","amount":130.0,"category":"食物","note":"吐司 豐原","payment":"現金"},{"date":"2026-07-13","amount":175.0,"category":"娛樂交誼","note":"星巴克紅茶和蛋塔","payment":"中信高島屋卡"},{"date":"2026-07-14","amount":17000.0,"category":"個人項目","note":"買Difa 衣服","payment":"賓士卡"},{"date":"2026-07-14","amount":55.0,"category":"食物","note":"早餐","payment":"現金"},{"date":"2026-07-16","amount":225.0,"category":"住家","note":"全聯購物家用品","payment":"momo 卡"},{"date":"2026-07-17","amount":1138.0,"category":"食物","note":"士林買菜","payment":"現金"}];
+
+(function(){
+"use strict";
+
+/* ========================= 設定資料 ========================= */
+var CATEGORIES = [
+  {key:"食物", color:"var(--c-food)", hex:"#C79A4E"},
+  {key:"交通", color:"var(--c-transport)", hex:"#6F9C93"},
+  {key:"住家", color:"var(--c-home)", hex:"#B48468"},
+  {key:"醫療", color:"var(--c-medical)", hex:"#8D7FA8"},
+  {key:"個人項目", color:"var(--c-personal)", hex:"#BD8188"},
+  {key:"水電瓦斯電信", color:"var(--c-utility)", hex:"#7FA080"},
+  {key:"娛樂交誼", color:"var(--c-fun)", hex:"#CE9A5E"},
+  {key:"學習成長", color:"var(--c-learn)", hex:"#6E86A3"},
+  {key:"保險稅賦", color:"var(--c-tax)", hex:"#9C8F76"},
+  {key:"金融", color:"var(--c-finance)", hex:"#93789A"},
+  {key:"其他", color:"var(--c-other)", hex:"#9C9686"}
+];
+var CAT_MAP = {};
+CATEGORIES.forEach(function(c){ CAT_MAP[c.key] = c; });
+
+var PAYMENTS = ["賓士卡","國泰世華卡","momo 卡","中信高島屋卡","悠遊卡","現金","轉帳","好市多卡"];
+
+var MONTH_NAMES = ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"];
+
+var STORAGE_KEY = "ledger2026_transactions_v1";
+
+/* ========================= 狀態 ========================= */
+var transactions = [];       // {id, date:'YYYY-MM-DD', amount, category, note, payment}
+var editingId = null;
+var selectedCategory = null;
+var selectedPayment = null;
+
+var today = new Date();
+var currentMonthKey = fmtMonthKey(today.getFullYear(), today.getMonth()+1);
+var statsYear = today.getFullYear();
+var statsMonth = today.getMonth()+1;
+
+/* ========================= 工具函式 ========================= */
+function pad2(n){ return n < 10 ? "0"+n : ""+n; }
+function fmtMonthKey(y,m){ return y + "-" + pad2(m); }
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate());
+}
+function uid(){ return "t" + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function money(n){
+  n = Math.round(Number(n)||0);
+  return "$" + n.toLocaleString("en-US");
+}
+function catColorHex(cat){
+  return (CAT_MAP[cat] && CAT_MAP[cat].hex) || "#9C9686";
+}
+function escapeHtml(s){
+  if(s===null||s===undefined) return "";
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+
+/* ========================= 儲存 / 讀取 ========================= */
+function loadTransactions(){
+  var raw = null;
+  try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
+  if(raw){
+    try{
+      var parsed = JSON.parse(raw);
+      if(Array.isArray(parsed)) return parsed;
+    }catch(e){}
+  }
+  // 第一次使用：匯入 Excel 原始資料
+  var seeded = (window.SEED_DATA || []).map(function(r){
+    return {
+      id: uid(),
+      date: r.date,
+      amount: Number(r.amount)||0,
+      category: r.category || "其他",
+      note: r.note || "",
+      payment: r.payment || ""
+    };
+  });
+  saveTransactions(seeded);
+  return seeded;
+}
+function saveTransactions(list){
+  transactions = list;
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){
+    showToast("儲存失敗：裝置儲存空間可能已滿");
+  }
+}
+
+/* ========================= Toast ========================= */
+var toastTimer = null;
+function showToast(msg){
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2000);
+}
+
+/* ========================= Tab 切換 ========================= */
+function switchTab(tab){
+  document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("active"); });
+  document.getElementById("screen-"+tab).classList.add("active");
+  document.querySelectorAll(".tab-btn").forEach(function(b){
+    b.classList.toggle("active", b.dataset.tab === tab);
+  });
+  if(tab === "month") renderMonthScreen();
+  if(tab === "stats") renderStatsScreen();
+  if(tab === "settings") renderSettingsScreen();
+  window.scrollTo(0,0);
+}
+
+/* ========================= 輸入畫面 ========================= */
+function buildChips(containerId, items, getKey, getLabel, getColor, onSelect, selectedKeyGetter){
+  var wrap = document.getElementById(containerId);
+  wrap.innerHTML = "";
+  items.forEach(function(item){
+    var key = getKey(item);
+    var chip = document.createElement("div");
+    chip.className = "chip";
+    chip.dataset.key = key;
+    var colorHtml = getColor ? '<span class="swatch" style="background:'+getColor(item)+'"></span>' : "";
+    chip.innerHTML = colorHtml + '<span>'+escapeHtml(getLabel(item))+'</span>';
+    chip.addEventListener("click", function(){
+      onSelect(key, chip, wrap);
+    });
+    wrap.appendChild(chip);
+  });
+}
+
+function renderInputChips(){
+  buildChips("categoryChips", CATEGORIES, function(c){return c.key;}, function(c){return c.key;}, function(c){return c.hex;},
+    function(key, chip, wrap){
+      selectedCategory = key;
+      wrap.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("selected"); });
+      chip.classList.add("selected");
+    });
+  buildChips("paymentChips", PAYMENTS, function(p){return p;}, function(p){return p;}, null,
+    function(key, chip, wrap){
+      selectedPayment = (selectedPayment === key) ? null : key;
+      wrap.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("selected"); });
+      if(selectedPayment) chip.classList.add("selected");
+    });
+}
+
+function resetInputForm(keepDate){
+  var dateVal = keepDate ? document.getElementById("inpDate").value : todayStr();
+  document.getElementById("inpDate").value = dateVal;
+  document.getElementById("inpAmount").value = "";
+  document.getElementById("inpNote").value = "";
+  selectedCategory = null;
+  selectedPayment = null;
+  document.querySelectorAll("#categoryChips .chip").forEach(function(c){ c.classList.remove("selected"); });
+  document.querySelectorAll("#paymentChips .chip").forEach(function(c){ c.classList.remove("selected"); });
+  editingId = null;
+  document.getElementById("editBanner").style.display = "none";
+  document.getElementById("editExtraRow").style.display = "none";
+  document.getElementById("saveBtn").textContent = "儲存";
+}
+
+function loadRecordIntoForm(tx){
+  editingId = tx.id;
+  document.getElementById("inpDate").value = tx.date;
+  document.getElementById("inpAmount").value = tx.amount || "";
+  document.getElementById("inpNote").value = tx.note || "";
+  selectedCategory = tx.category || null;
+  selectedPayment = tx.payment || null;
+  document.querySelectorAll("#categoryChips .chip").forEach(function(c){
+    c.classList.toggle("selected", c.dataset.key === selectedCategory);
+  });
+  document.querySelectorAll("#paymentChips .chip").forEach(function(c){
+    c.classList.toggle("selected", c.dataset.key === selectedPayment);
+  });
+  document.getElementById("editBanner").style.display = "flex";
+  document.getElementById("editExtraRow").style.display = "flex";
+  document.getElementById("saveBtn").textContent = "更新這筆紀錄";
+  switchTab("input");
+}
+
+function handleSave(){
+  var date = document.getElementById("inpDate").value;
+  var amount = parseFloat(document.getElementById("inpAmount").value);
+  var note = document.getElementById("inpNote").value.trim();
+
+  if(!date){ showToast("請選擇日期"); return; }
+  if(isNaN(amount) || amount < 0){ showToast("請輸入正確的消費金額"); return; }
+  if(!selectedCategory){ showToast("請選擇類別"); return; }
+
+  if(editingId){
+    var idx = transactions.findIndex(function(t){ return t.id === editingId; });
+    if(idx >= 0){
+      transactions[idx] = {
+        id: editingId, date: date, amount: amount,
+        category: selectedCategory, note: note, payment: selectedPayment || ""
+      };
+      saveTransactions(transactions.slice());
+      showToast("已更新這筆紀錄");
+    }
+  } else {
+    var tx = {
+      id: uid(), date: date, amount: amount,
+      category: selectedCategory, note: note, payment: selectedPayment || ""
+    };
+    transactions.push(tx);
+    saveTransactions(transactions.slice());
+    showToast("已儲存");
+  }
+
+  var savedDate = date;
+  resetInputForm(true);
+  currentMonthKey = savedDate.slice(0,7);
+  switchTab("month");
+}
+
+function handleDelete(){
+  if(!editingId) return;
+  if(!confirm("確定要刪除這筆紀錄嗎？")) return;
+  transactions = transactions.filter(function(t){ return t.id !== editingId; });
+  saveTransactions(transactions.slice());
+  showToast("已刪除");
+  resetInputForm(false);
+  switchTab("month");
+}
+
+/* ========================= 本月紀錄畫面 ========================= */
+function shiftMonth(delta){
+  var parts = currentMonthKey.split("-").map(Number);
+  var y = parts[0], m = parts[1];
+  m += delta;
+  if(m < 1){ m = 12; y -= 1; }
+  if(m > 12){ m = 1; y += 1; }
+  currentMonthKey = fmtMonthKey(y,m);
+  renderMonthScreen();
+}
+
+function renderMonthScreen(){
+  var parts = currentMonthKey.split("-").map(Number);
+  var y = parts[0], m = parts[1];
+  document.getElementById("monthYearLabel").textContent = y + " 年";
+  document.getElementById("monthLabel").textContent = MONTH_NAMES[m-1];
+
+  var monthTx = transactions.filter(function(t){ return t.date && t.date.slice(0,7) === currentMonthKey; });
+  monthTx.sort(function(a,b){ return a.date < b.date ? 1 : (a.date > b.date ? -1 : 0); });
+
+  var total = monthTx.reduce(function(s,t){ return s + (Number(t.amount)||0); }, 0);
+  document.getElementById("monthTotalAmount").textContent = money(total);
+  document.getElementById("monthTotalMeta").textContent = "共 " + monthTx.length + " 筆紀錄";
+
+  var listEl = document.getElementById("monthList");
+  listEl.innerHTML = "";
+
+  if(monthTx.length === 0){
+    listEl.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16" stroke-linecap="round"/></svg><div class="t">這個月還沒有紀錄</div></div>';
+    return;
+  }
+
+  var groups = {};
+  var order = [];
+  monthTx.forEach(function(t){
+    if(!groups[t.date]){ groups[t.date] = []; order.push(t.date); }
+    groups[t.date].push(t);
+  });
+
+  order.forEach(function(dateKey){
+    var d = new Date(dateKey + "T00:00:00");
+    var wd = ["日","一","二","三","四","五","六"][d.getDay()];
+    var dayNum = Number(dateKey.slice(8,10));
+    var dayTotal = groups[dateKey].reduce(function(s,t){ return s+(Number(t.amount)||0); }, 0);
+
+    var dayLabel = document.createElement("div");
+    dayLabel.className = "day-label";
+    dayLabel.innerHTML = '<span>' + dayNum + ' 日 週' + wd + '</span><span>' + money(dayTotal) + '</span>';
+    listEl.appendChild(dayLabel);
+
+    groups[dateKey].forEach(function(t){
+      var row = document.createElement("div");
+      row.className = "tx-row";
+      row.innerHTML =
+        '<div class="tx-dot" style="background:'+catColorHex(t.category)+'"></div>' +
+        '<div class="tx-mid">' +
+          '<div class="tx-cat">' + escapeHtml(t.category || "其他") + '</div>' +
+          (t.note ? '<div class="tx-note">'+escapeHtml(t.note)+'</div>' : '') +
+          (t.payment ? '<div class="tx-pay">'+escapeHtml(t.payment)+'</div>' : '') +
+        '</div>' +
+        '<div class="tx-amt">' + money(t.amount) + '</div>';
+      row.addEventListener("click", function(){ loadRecordIntoForm(t); });
+      listEl.appendChild(row);
+    });
+  });
+}
+
+/* ========================= 統計畫面 ========================= */
+function getAvailableYears(){
+  var years = {};
+  years[today.getFullYear()] = true;
+  transactions.forEach(function(t){
+    if(t.date) years[Number(t.date.slice(0,4))] = true;
+  });
+  return Object.keys(years).map(Number).sort(function(a,b){return b-a;});
+}
+
+function renderStatsScreen(){
+  var yearSelect = document.getElementById("yearSelect");
+  var years = getAvailableYears();
+  yearSelect.innerHTML = years.map(function(y){
+    return '<option value="'+y+'"'+(y===statsYear?' selected':'')+'>'+y+' 年</option>';
+  }).join("");
+
+  renderYearBarChart();
+  renderMonthDonut();
+}
+
+function renderYearBarChart(){
+  var wrap = document.getElementById("yearBarChart");
+  wrap.innerHTML = "";
+
+  var monthTotals = new Array(12).fill(0);
+  transactions.forEach(function(t){
+    if(!t.date) return;
+    var y = Number(t.date.slice(0,4));
+    var m = Number(t.date.slice(5,7));
+    if(y === statsYear) monthTotals[m-1] += (Number(t.amount)||0);
+  });
+
+  var maxVal = Math.max.apply(null, monthTotals.concat([1]));
+
+  monthTotals.forEach(function(val, idx){
+    var m = idx+1;
+    var row = document.createElement("div");
+    row.className = "bar-row" + (m===statsMonth ? " selected" : "");
+    var widthPct = Math.max(2, Math.round((val/maxVal)*100));
+    row.innerHTML =
+      '<div class="m-label">' + m + '月</div>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:'+widthPct+'%"></div></div>' +
+      '<div class="bar-val">' + (val>0 ? money(val) : "$0") + '</div>';
+    row.addEventListener("click", function(){
+      statsMonth = m;
+      document.querySelectorAll(".bar-row").forEach(function(r){ r.classList.remove("selected"); });
+      row.classList.add("selected");
+      renderMonthDonut();
+      document.getElementById("monthDonutCard").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    wrap.appendChild(row);
+  });
+}
+
+function renderMonthDonut(){
+  var monthKey = fmtMonthKey(statsYear, statsMonth);
+  var monthTx = transactions.filter(function(t){ return t.date && t.date.slice(0,7) === monthKey; });
+
+  var sums = {};
+  var total = 0;
+  monthTx.forEach(function(t){
+    var cat = t.category || "其他";
+    sums[cat] = (sums[cat]||0) + (Number(t.amount)||0);
+    total += (Number(t.amount)||0);
+  });
+
+  document.getElementById("donutMonthLabel").textContent = statsYear + " 年 " + MONTH_NAMES[statsMonth-1] + " 消費總額";
+  document.getElementById("donutTotalAmount").textContent = money(total);
+
+  var entries = Object.keys(sums).map(function(k){ return {cat:k, amt:sums[k]}; })
+    .filter(function(e){ return e.amt > 0; })
+    .sort(function(a,b){ return b.amt - a.amt; });
+
+  var donutWrap = document.getElementById("donutChartWrap");
+  var legendWrap = document.getElementById("donutLegend");
+
+  if(entries.length === 0 || total <= 0){
+    donutWrap.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg><div class="t">這個月還沒有支出資料</div></div>';
+    legendWrap.innerHTML = "";
+    return;
+  }
+
+  donutWrap.innerHTML = buildDonutSvg(entries, total);
+
+  legendWrap.innerHTML = entries.map(function(e){
+    var pct = ((e.amt/total)*100).toFixed(1);
+    return '<div class="legend-row">' +
+      '<div class="legend-dot" style="background:'+catColorHex(e.cat)+'"></div>' +
+      '<div class="legend-name">'+escapeHtml(e.cat)+'</div>' +
+      '<div class="legend-pct">'+pct+'%</div>' +
+      '<div class="legend-amt">'+money(e.amt)+'</div>' +
+    '</div>';
+  }).join("");
+}
+
+function buildDonutSvg(entries, total){
+  var size = 220;
+  var cx = size/2, cy = size/2;
+  var r = 78;
+  var strokeW = 30;
+  var circumference = 2 * Math.PI * r;
+
+  var offsetAcc = 0;
+  var segs = entries.map(function(e){
+    var frac = e.amt/total;
+    var len = frac * circumference;
+    var seg = '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+catColorHex(e.cat)+'" ' +
+      'stroke-width="'+strokeW+'" stroke-dasharray="'+len+' '+(circumference-len)+'" ' +
+      'stroke-dashoffset="'+(-offsetAcc)+'" stroke-linecap="butt"></circle>';
+    offsetAcc += len;
+    return seg;
+  }).join("");
+
+  var svg = '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">' +
+    '<g transform="rotate(-90 '+cx+' '+cy+')">' + segs + '</g>' +
+    '<circle cx="'+cx+'" cy="'+cy+'" r="'+(r-strokeW/2-2)+'" fill="var(--card)"></circle>' +
+    '<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" class="donut-center-label">類別分佈</text>' +
+    '<text x="'+cx+'" y="'+(cy+20)+'" text-anchor="middle" class="donut-center-amount">'+entries.length+' 類</text>' +
+    '</svg>';
+  return svg;
+}
+
+/* ========================= 設定畫面 ========================= */
+function renderSettingsScreen(){
+  document.getElementById("statCount").textContent = transactions.length;
+  var total = transactions.reduce(function(s,t){ return s+(Number(t.amount)||0); }, 0);
+  document.getElementById("statTotal").textContent = money(total).replace("$","");
+}
+
+/* ---- 匯出 CSV ---- */
+function exportCsv(){
+  var rows = [["日期","消費金額","類別","備註","付費方式"]];
+  transactions.slice().sort(function(a,b){ return a.date < b.date ? -1 : 1; }).forEach(function(t){
+    rows.push([t.date, t.amount, t.category, t.note, t.payment]);
+  });
+  var csv = rows.map(function(r){
+    return r.map(function(cell){
+      var s = (cell===null||cell===undefined) ? "" : String(cell);
+      if(/[",\n]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
+      return s;
+    }).join(",");
+  }).join("\n");
+  var blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
+  downloadBlob(blob, "記帳" + today.getFullYear() + "_" + Date.now() + ".csv");
+  showToast("CSV 已匯出");
+}
+
+/* ---- 匯出 Excel (.xlsx)，格式比照原始檔案結構 ---- */
+function exportXlsx(){
+  if(typeof XLSX === "undefined"){ showToast("匯出功能載入中，請稍後再試"); return; }
+
+  var years = getAvailableYears();
+  var wb = XLSX.utils.book_new();
+
+  years.forEach(function(y){
+    var yearTx = transactions.filter(function(t){ return t.date && Number(t.date.slice(0,4)) === y; });
+    if(yearTx.length === 0) return;
+
+    // 年度統計 - 支出統計
+    var statHeader = ["類別"].concat(MONTH_NAMES, ["合計"]);
+    var catOrder = CATEGORIES.map(function(c){return c.key;});
+    var statRows = [statHeader];
+    var monthColTotals = new Array(12).fill(0);
+    catOrder.forEach(function(cat){
+      var rowVals = [cat];
+      var rowTotal = 0;
+      for(var m=1;m<=12;m++){
+        var mk = fmtMonthKey(y,m);
+        var sum = yearTx.filter(function(t){ return t.date.slice(0,7)===mk && (t.category||"其他")===cat; })
+                         .reduce(function(s,t){ return s+(Number(t.amount)||0); },0);
+        rowVals.push(sum);
+        rowTotal += sum;
+        monthColTotals[m-1] += sum;
+      }
+      rowVals.push(rowTotal);
+      if(rowTotal > 0 || yearTx.some(function(t){return (t.category||"其他")===cat;})) statRows.push(rowVals);
+    });
+    var grandTotalRow = ["支出總計"].concat(monthColTotals, [monthColTotals.reduce(function(a,b){return a+b;},0)]);
+    statRows.push(grandTotalRow);
+    var statSheet = XLSX.utils.aoa_to_sheet(statRows);
+    XLSX.utils.book_append_sheet(wb, statSheet, (y+" 年度統計").slice(0,31));
+
+    // 每月支出明細
+    for(var m=1;m<=12;m++){
+      var mk = fmtMonthKey(y,m);
+      var monthRows = yearTx.filter(function(t){ return t.date.slice(0,7)===mk; })
+                             .sort(function(a,b){ return a.date<b.date?-1:1; });
+      if(monthRows.length === 0) continue;
+      var aoa = [["日期","消費金額","類別","備註","付費方式"]];
+      monthRows.forEach(function(t){
+        aoa.push([t.date, t.amount, t.category, t.note, t.payment]);
+      });
+      var sheet = XLSX.utils.aoa_to_sheet(aoa);
+      XLSX.utils.book_append_sheet(wb, sheet, (MONTH_NAMES[m-1]+" 支出").slice(0,31));
+    }
+  });
+
+  // 全部資料（單一總表，方便快速瀏覽）
+  var allAoa = [["日期","消費金額","類別","備註","付費方式"]];
+  transactions.slice().sort(function(a,b){ return a.date<b.date?-1:1; }).forEach(function(t){
+    allAoa.push([t.date, t.amount, t.category, t.note, t.payment]);
+  });
+  var allSheet = XLSX.utils.aoa_to_sheet(allAoa);
+  XLSX.utils.book_append_sheet(wb, allSheet, "全部資料");
+
+  var fname = "記帳" + today.getFullYear() + "_" + Date.now() + ".xlsx";
+  XLSX.writeFile(wb, fname);
+  showToast("Excel 已匯出");
+}
+
+function downloadBlob(blob, filename){
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+}
+
+/* ---- 匯入 ---- */
+function handleImportFile(file){
+  var name = file.name.toLowerCase();
+  if(name.endsWith(".csv")){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var text = e.target.result.replace(/^\uFEFF/, "");
+        var lines = text.split(/\r?\n/).filter(function(l){ return l.trim().length>0; });
+        var startIdx = 0;
+        if(lines[0] && lines[0].indexOf("日期")>=0) startIdx = 1;
+        var added = 0;
+        for(var i=startIdx;i<lines.length;i++){
+          var cells = parseCsvLine(lines[i]);
+          var rec = rowToRecord(cells);
+          if(rec){ transactions.push(rec); added++; }
+        }
+        saveTransactions(transactions.slice());
+        showToast("已匯入 " + added + " 筆資料");
+        renderSettingsScreen();
+      }catch(err){
+        showToast("匯入失敗，請確認檔案格式");
+      }
+    };
+    reader.readAsText(file, "UTF-8");
+  } else {
+    var reader2 = new FileReader();
+    reader2.onload = function(e){
+      try{
+        var data = new Uint8Array(e.target.result);
+        var wb = XLSX.read(data, {type:"array", cellDates:true});
+        var added = 0;
+        wb.SheetNames.forEach(function(sn){
+          var sheet = wb.Sheets[sn];
+          var rows = XLSX.utils.sheet_to_json(sheet, {header:1, raw:true});
+          var headerIdx = -1;
+          for(var i=0;i<rows.length;i++){
+            if(rows[i] && rows[i][0] === "日期"){ headerIdx = i; break; }
+          }
+          if(headerIdx === -1) return;
+          for(var j=headerIdx+1;j<rows.length;j++){
+            var row = rows[j];
+            if(!row || row.every(function(v){return v===undefined||v==="";})) continue;
+            var rec = rowToRecord(row);
+            if(rec){ transactions.push(rec); added++; }
+          }
+        });
+        saveTransactions(transactions.slice());
+        showToast("已匯入 " + added + " 筆資料");
+        renderSettingsScreen();
+      }catch(err){
+        showToast("匯入失敗，請確認檔案格式");
+      }
+    };
+    reader2.readAsArrayBuffer(file);
+  }
+}
+
+function parseCsvLine(line){
+  var result = []; var cur = ""; var inQuotes = false;
+  for(var i=0;i<line.length;i++){
+    var ch = line[i];
+    if(inQuotes){
+      if(ch === '"'){
+        if(line[i+1] === '"'){ cur += '"'; i++; } else { inQuotes = false; }
+      } else cur += ch;
+    } else {
+      if(ch === '"') inQuotes = true;
+      else if(ch === ','){ result.push(cur); cur = ""; }
+      else cur += ch;
+    }
+  }
+  result.push(cur);
+  return result;
+}
+
+function rowToRecord(cells){
+  if(!cells || cells.length < 2) return null;
+  var rawDate = cells[0];
+  var dateStr = "";
+  if(rawDate instanceof Date){
+    dateStr = rawDate.getFullYear() + "-" + pad2(rawDate.getMonth()+1) + "-" + pad2(rawDate.getDate());
+  } else if(typeof rawDate === "string"){
+    var m = rawDate.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+    if(m) dateStr = m[1] + "-" + pad2(Number(m[2])) + "-" + pad2(Number(m[3]));
+  }
+  if(!dateStr) return null;
+  var amount = parseFloat(cells[1]);
+  if(isNaN(amount)) amount = 0;
+  var category = (cells[2]||"").toString().trim() || "其他";
+  var note = (cells[3]||"").toString().trim();
+  var payment = (cells[4]||"").toString().trim();
+  return {id:uid(), date:dateStr, amount:amount, category:category, note:note, payment:payment};
+}
+
+/* ========================= 事件綁定 ========================= */
+function initEvents(){
+  document.querySelectorAll(".tab-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){ switchTab(btn.dataset.tab); });
+  });
+
+  document.getElementById("saveBtn").addEventListener("click", handleSave);
+  document.getElementById("deleteBtn").addEventListener("click", handleDelete);
+  document.getElementById("cancelEditBtn").addEventListener("click", function(){
+    resetInputForm(false);
+  });
+
+  document.getElementById("prevMonthBtn").addEventListener("click", function(){ shiftMonth(-1); });
+  document.getElementById("nextMonthBtn").addEventListener("click", function(){ shiftMonth(1); });
+
+  document.getElementById("yearSelect").addEventListener("change", function(){
+    statsYear = Number(this.value);
+    renderYearBarChart();
+    renderMonthDonut();
+  });
+
+  document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
+  document.getElementById("exportXlsxBtn").addEventListener("click", exportXlsx);
+
+  document.getElementById("importBtn").addEventListener("click", function(){
+    document.getElementById("importFileInput").click();
+  });
+  document.getElementById("importFileInput").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if(file) handleImportFile(file);
+    e.target.value = "";
+  });
+
+  document.getElementById("clearAllBtn").addEventListener("click", function(){
+    if(confirm("確定要清除所有記帳資料嗎？建議先匯出備份。")){
+      if(confirm("再次確認：這個動作無法復原，真的要刪除全部資料嗎？")){
+        saveTransactions([]);
+        showToast("已清除所有資料");
+        renderSettingsScreen();
+        renderMonthScreen();
+      }
+    }
+  });
+}
+
+/* ========================= 啟動 ========================= */
+function init(){
+  var hd = document.getElementById("headerDate");
+  var wd = ["日","一","二","三","四","五","六"][today.getDay()];
+  hd.textContent = (today.getMonth()+1) + "月" + today.getDate() + "日 週" + wd;
+
+  document.getElementById("inpDate").value = todayStr();
+
+  transactions = loadTransactions();
+  renderInputChips();
+  initEvents();
+  switchTab("input");
+}
+
+document.addEventListener("DOMContentLoaded", init);
+})();
+
+</script>
+</body>
+</html>
