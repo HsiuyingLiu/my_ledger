@@ -6,6 +6,8 @@
     <title>2026 手機行動記帳本</title>
     <!-- Include Chart.js via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include SheetJS via CDN for native XLSX export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -338,7 +340,7 @@
             
             <div class="card">
                 <div class="card-title">📂 檔案維護與資料導出</div>
-                <button class="btn" onclick="downloadAsExcel()" style="background-color: #2ecc71; margin-bottom: 10px;">📊 匯出為 Excel 試算表</button>
+                <button class="btn" onclick="downloadAsExcel()" style="background-color: #2ecc71; margin-bottom: 10px;">📊 匯出為 Excel (.xlsx) 檔案</button>
                 <div style="display: flex; gap:8px;">
                     <button class="btn" onclick="exportJSON()" style="background-color: #95a5a6; padding:10px; font-size:0.85rem;">備份 JSON</button>
                     <button class="btn" onclick="document.getElementById('import-file').click()" style="background-color: #7f8c8d; padding:10px; font-size:0.85rem;">還原 JSON</button>
@@ -382,7 +384,7 @@
     </div>
 
     <script>
-        // Preloaded historical data array from excel file
+        // Load data from localStorage or fallback
         let expenses = JSON.parse(localStorage.getItem('expenses_2026_v2')) || [];
 
         // Setup safe date parsing helper
@@ -450,7 +452,6 @@
         }
 
         function refreshUI() {
-            // Update item view shortcut under input
             const currentSelectedDate = document.getElementById('date').value;
             const currentMonthStr = getYearMonthDay(currentSelectedDate).m;
             document.getElementById('input-view-month-lbl').innerText = parseInt(currentMonthStr) + '月';
@@ -483,7 +484,6 @@
             }
         }
 
-        // Render Horizontal Chart (Y axis: Months, X axis: Sum values)
         function renderYearlyChart() {
             const sums = Array(12).fill(0);
             expenses.forEach(item => {
@@ -510,7 +510,7 @@
                     }]
                 },
                 options: {
-                    indexAxis: 'y', // Makes it horizontal
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
@@ -538,7 +538,6 @@
             });
         }
 
-        // Render Screen 3: Monthly Doughnut and breakdown list
         function renderMonthlyDetail() {
             document.getElementById('detail-month-title').innerText = parseInt(selectedMonthForDetail) + '月';
             
@@ -546,7 +545,6 @@
             const totalSum = targetExpenses.reduce((sum, item) => sum + item.amount, 0);
             document.getElementById('detail-month-sum').innerText = '$' + totalSum.toLocaleString();
 
-            // Group into categories
             const catMap = {};
             targetExpenses.forEach(item => {
                 let c = item.category === '保險稅負' ? '保險稅賦' : item.category;
@@ -586,7 +584,6 @@
                 }
             });
 
-            // Month full list display
             const listContainer = document.getElementById('detail-month-full-list');
             listContainer.innerHTML = '';
             
@@ -611,27 +608,51 @@
             }
         }
 
-        // Export data directly as HTML compatible CSV/TSV table format mimicking standard workbook structure
+        // Native XLSX Download via SheetJS (Fully mobile compatible with Safari/iCloud)
         function downloadAsExcel() {
-            // We create a clean CSV with a BOM prefix so Microsoft Excel opens it directly with correct traditional Chinese characters.
-            let csvContent = "﻿";
-            csvContent += "日期,消費金額,類別,備註,付費方式\n";
-            
-            // Sort standard order by date ascending for professional historical archiving
-            const sorted = [...expenses].sort((a,b) => new Date(a.date) - new Date(b.date));
-            sorted.forEach(item => {
-                let remarkClean = (item.remark || '').replace(/,/g, ' ');
-                csvContent += `${item.date},${item.amount},${item.category},${remarkClean},${item.payment}\n`;
-            });
+            try {
+                if (expenses.length === 0) {
+                    alert("目前尚無任何記帳數據可供匯出。");
+                    return;
+                }
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "2026記帳匯出紀錄.csv");
-            document.body.appendChild(link);
-            link.click();
-            link.document.body.removeChild(link);
+                // 1. Prepare raw row arrays matching original schema
+                const wsData = [
+                    ["日期", "消費金額", "類別", "備註", "付費方式"]
+                ];
+
+                // Sort ascending by date for neat spreadsheet logging
+                const sorted = [...expenses].sort((a,b) => new Date(a.date) - new Date(b.date));
+                sorted.forEach(item => {
+                    wsData.push([
+                        item.date,
+                        item.amount,
+                        item.category,
+                        item.remark || "",
+                        item.payment
+                    ]);
+                });
+
+                // 2. Build workbook using SheetJS object
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+                // Set column widths for polished presentation inside Excel
+                ws['!cols'] = [
+                    { wch: 14 }, // Date
+                    { wch: 12 }, // Amount
+                    { wch: 15 }, // Category
+                    { wch: 25 }, // Remark
+                    { wch: 15 }  // Payment
+                ];
+
+                XLSX.utils.book_append_sheet(wb, ws, "2026年度消費明細");
+
+                // 3. Trigger native file trigger (SheetJS intercepts mobile blobs correctly)
+                XLSX.writeFile(wb, "2026記帳匯出紀錄.xlsx");
+            } catch (err) {
+                alert("匯出 Excel 發生錯誤: " + err.message);
+            }
         }
 
         function exportJSON() {
@@ -660,10 +681,7 @@
             reader.readAsText(file);
         }
 
-        // Watchers
         document.getElementById('date').addEventListener('change', refreshUI);
-
-        // Init
         refreshUI();
     </script>
 </body>
