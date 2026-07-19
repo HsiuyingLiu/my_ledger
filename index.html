@@ -637,7 +637,6 @@
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-                // Set column widths for polished presentation inside Excel
                 ws['!cols'] = [
                     { wch: 14 }, // Date
                     { wch: 12 }, // Amount
@@ -648,12 +647,32 @@
 
                 XLSX.utils.book_append_sheet(wb, ws, "2026年度消費明細");
 
-                // 3. Trigger native file trigger (SheetJS intercepts mobile blobs correctly)
-                XLSX.writeFile(wb, "2026記帳匯出紀錄.xlsx");
+                // 3. Generate binary Excel file data explicitly
+                const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                
+                // 4. Create standard Blob with correct Excel MIME type
+                const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                
+                // 5. Use absolute safe anchor methodology for iOS Safari
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "2026記帳匯出紀錄.xlsx";
+                
+                // Append to body to ensure iOS registers it within the document context
+                document.body.appendChild(link);
+                link.click();
+                
+                // Clean up trailing resources safely
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 100);
+
             } catch (err) {
                 alert("匯出 Excel 發生錯誤: " + err.message);
             }
-        }
+        }\n\n        
 
         function exportJSON() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(expenses, null, 2));
