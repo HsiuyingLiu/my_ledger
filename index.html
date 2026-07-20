@@ -134,15 +134,20 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:8px;
     box-sizing:border-box;
   }
   .date-input-shell #dateDisplayText{
-    font-size:18px;
+    font-size:17px;
     font-weight:700;
     color:var(--ink);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    letter-spacing:0.2px;
   }
   .date-input-shell .date-icon{
-    width:20px; height:20px;
+    width:19px; height:19px;
     stroke:var(--ink-soft);
     fill:none;
     stroke-width:1.8;
@@ -562,9 +567,7 @@ function todayStr(){
 function formatDateDisplay(ds){
   if(!ds) return "選擇日期";
   var p = ds.split("-").map(Number);
-  var d = new Date(p[0], p[1]-1, p[2]);
-  var wd = ["日","一","二","三","四","五","六"][d.getDay()];
-  return p[0] + " 年 " + p[1] + " 月 " + p[2] + " 日　週" + wd;
+  return p[0] + "/" + pad2(p[1]) + "/" + pad2(p[2]);
 }
 function setInputDate(ds){
   document.getElementById("inpDate").value = ds;
