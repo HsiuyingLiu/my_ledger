@@ -123,6 +123,45 @@
   input:focus, textarea:focus{border-color:var(--accent);}
   textarea{resize:none; min-height:52px;}
 
+  .date-input-shell{
+    position:relative;
+    width:100%;
+    min-height:52px;
+    background:var(--card-alt);
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-md);
+    padding:14px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-sizing:border-box;
+  }
+  .date-input-shell #dateDisplayText{
+    font-size:18px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .date-input-shell .date-icon{
+    width:20px; height:20px;
+    stroke:var(--ink-soft);
+    fill:none;
+    stroke-width:1.8;
+    flex-shrink:0;
+  }
+  input.date-native-overlay{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+    border:0;
+    opacity:0;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+
   .amount-input-wrap{position:relative;}
   .amount-input-wrap .cur{
     position:absolute; left:16px; top:50%; transform:translateY(-50%);
@@ -350,7 +389,11 @@
 
       <div class="field">
         <label class="field-label">日期</label>
-        <input type="date" id="inpDate">
+        <div class="date-input-shell" id="dateShell">
+          <span id="dateDisplayText">選擇日期</span>
+          <svg class="date-icon" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M8 3.5v4M16 3.5v4M3.5 10h17" stroke-linecap="round"/></svg>
+          <input type="date" id="inpDate" class="date-native-overlay">
+        </div>
       </div>
 
       <div class="field">
@@ -516,6 +559,17 @@ function todayStr(){
   var d = new Date();
   return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate());
 }
+function formatDateDisplay(ds){
+  if(!ds) return "選擇日期";
+  var p = ds.split("-").map(Number);
+  var d = new Date(p[0], p[1]-1, p[2]);
+  var wd = ["日","一","二","三","四","五","六"][d.getDay()];
+  return p[0] + " 年 " + p[1] + " 月 " + p[2] + " 日　週" + wd;
+}
+function setInputDate(ds){
+  document.getElementById("inpDate").value = ds;
+  document.getElementById("dateDisplayText").textContent = formatDateDisplay(ds);
+}
 function uid(){ return "t" + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function money(n){
   n = Math.round(Number(n)||0);
@@ -620,7 +674,7 @@ function renderInputChips(){
 
 function resetInputForm(keepDate){
   var dateVal = keepDate ? document.getElementById("inpDate").value : todayStr();
-  document.getElementById("inpDate").value = dateVal;
+  setInputDate(dateVal);
   document.getElementById("inpAmount").value = "";
   document.getElementById("inpNote").value = "";
   selectedCategory = null;
@@ -635,7 +689,7 @@ function resetInputForm(keepDate){
 
 function loadRecordIntoForm(tx){
   editingId = tx.id;
-  document.getElementById("inpDate").value = tx.date;
+  setInputDate(tx.date);
   document.getElementById("inpAmount").value = tx.amount || "";
   document.getElementById("inpNote").value = tx.note || "";
   selectedCategory = tx.category || null;
@@ -1092,6 +1146,10 @@ function initEvents(){
     resetInputForm(false);
   });
 
+  document.getElementById("inpDate").addEventListener("change", function(){
+    document.getElementById("dateDisplayText").textContent = formatDateDisplay(this.value);
+  });
+
   document.getElementById("prevMonthBtn").addEventListener("click", function(){ shiftMonth(-1); });
   document.getElementById("nextMonthBtn").addEventListener("click", function(){ shiftMonth(1); });
 
@@ -1131,6 +1189,7 @@ function init(){
   hd.textContent = (today.getMonth()+1) + "月" + today.getDate() + "日 週" + wd;
 
   document.getElementById("inpDate").value = todayStr();
+  document.getElementById("dateDisplayText").textContent = formatDateDisplay(todayStr());
 
   transactions = loadTransactions();
   renderInputChips();
