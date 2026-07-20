@@ -12,9 +12,9 @@
     --bg-soft:#E4DED3;
     --card:#F8F5EF;
     --card-alt:#FBF9F5;
-    --ink:#3C3730;
-    --ink-soft:#6E675C;
-    --ink-faint:#9A9284;
+    --ink:#242019;
+    --ink-soft:#4A4338;
+    --ink-faint:#6E6656;
     --line:#DCD3C4;
     --line-soft:#E8E1D3;
     --accent:#8C7862;
@@ -51,11 +51,12 @@
     background:var(--bg);
     color:var(--ink);
     font-family:-apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
-    font-size:19px;
-    line-height:1.5;
+    font-size:18.5px;
+    line-height:1.55;
     -webkit-font-smoothing:antialiased;
     min-height:100vh;
     padding-bottom: calc(72px + var(--safe-bottom));
+    overflow-x:hidden;
   }
 
   h1,h2,h3{margin:0; font-weight:700; color:var(--ink);}
@@ -76,7 +77,7 @@
     background:var(--accent);
     display:inline-block;
   }
-  .app-header .sub{font-size:13px; color:var(--ink-faint);}
+  .app-header .sub{font-size:14px; color:var(--ink-soft); font-weight:600;}
 
   main{padding: 4px 16px 24px;}
 
@@ -95,45 +96,51 @@
 
   /* Form elements */
   label.field-label{
-    display:block; font-size:14px; font-weight:700; color:var(--ink-soft);
+    display:block; font-size:15px; font-weight:800; color:var(--ink-soft);
     margin:0 0 8px 2px; letter-spacing:0.3px;
   }
-  .field{margin-bottom:20px;}
+  .field{margin-bottom:20px; width:100%;}
   .field:last-child{margin-bottom:0;}
 
   input[type=date], input[type=text], input[type=number], textarea{
+    display:block;
     width:100%;
+    min-width:0;
+    max-width:100%;
+    -webkit-min-logical-width:0;
     background:var(--card-alt);
     border:1.5px solid var(--line);
     border-radius:var(--radius-md);
     padding:14px 14px;
-    font-size:17px;
+    font-size:18px;
     color:var(--ink);
     font-family:inherit;
     outline:none;
     transition:border-color .15s;
+    box-sizing:border-box;
   }
+  input[type=date]{ min-height:52px; }
   input:focus, textarea:focus{border-color:var(--accent);}
   textarea{resize:none; min-height:52px;}
 
   .amount-input-wrap{position:relative;}
   .amount-input-wrap .cur{
     position:absolute; left:16px; top:50%; transform:translateY(-50%);
-    color:var(--ink-soft); font-size:20px; font-weight:700;
+    color:var(--ink-soft); font-size:22px; font-weight:800;
   }
   .amount-input-wrap input{
-    padding-left:36px; font-size:26px; font-weight:800; letter-spacing:0.5px;
-    height:58px;
+    padding-left:38px; font-size:28px; font-weight:800; letter-spacing:0.5px;
+    height:60px;
   }
 
   .chip-grid{display:flex; flex-wrap:wrap; gap:9px;}
   .chip{
-    padding:10px 15px;
+    padding:11px 16px;
     border-radius:999px;
     background:var(--card-alt);
     border:1.5px solid var(--line);
     color:var(--ink-soft);
-    font-size:15px; font-weight:600;
+    font-size:16.5px; font-weight:700;
     cursor:pointer;
     display:flex; align-items:center; gap:7px;
     user-select:none;
@@ -149,10 +156,10 @@
   .btn{
     display:flex; align-items:center; justify-content:center; gap:8px;
     width:100%;
-    padding:16px;
+    padding:17px;
     border-radius:var(--radius-md);
     border:none;
-    font-size:17px; font-weight:800;
+    font-size:18px; font-weight:800;
     cursor:pointer;
     font-family:inherit;
     letter-spacing:0.3px;
@@ -177,10 +184,10 @@
   .tab-btn{
     flex:1; background:none; border:none; padding:10px 4px 8px;
     display:flex; flex-direction:column; align-items:center; gap:3px;
-    color:var(--ink-faint); font-family:inherit; cursor:pointer;
+    color:var(--ink-soft); font-family:inherit; cursor:pointer;
   }
-  .tab-btn svg{width:23px; height:23px; stroke:var(--ink-faint); fill:none; stroke-width:1.8;}
-  .tab-btn span{font-size:11px; font-weight:700;}
+  .tab-btn svg{width:23px; height:23px; stroke:var(--ink-soft); fill:none; stroke-width:1.8;}
+  .tab-btn span{font-size:12px; font-weight:800;}
   .tab-btn.active{color:var(--accent-dark);}
   .tab-btn.active svg{stroke:var(--accent-dark);}
 
@@ -196,8 +203,8 @@
     cursor:pointer;
   }
   .month-switcher .arrow-btn svg{width:18px; height:18px; stroke:var(--ink); fill:none; stroke-width:2.2;}
-  .month-switcher .title{font-size:19px; font-weight:800; text-align:center;}
-  .month-switcher .title .yr{font-size:13px; color:var(--ink-faint); font-weight:600; display:block;}
+  .month-switcher .title{font-size:20px; font-weight:800; text-align:center;}
+  .month-switcher .title .yr{font-size:14px; color:var(--ink-soft); font-weight:700; display:block;}
 
   .total-banner{
     background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
@@ -207,18 +214,18 @@
     margin-bottom:16px;
     box-shadow:var(--shadow-card);
   }
-  .total-banner .label{font-size:13px; opacity:0.85; font-weight:600; letter-spacing:0.5px;}
-  .total-banner .amount{font-size:34px; font-weight:800; margin-top:4px; letter-spacing:0.3px;}
-  .total-banner .meta{font-size:12.5px; opacity:0.8; margin-top:6px;}
+  .total-banner .label{font-size:14px; opacity:0.92; font-weight:700; letter-spacing:0.5px;}
+  .total-banner .amount{font-size:35px; font-weight:800; margin-top:4px; letter-spacing:0.3px;}
+  .total-banner .meta{font-size:13.5px; opacity:0.9; margin-top:6px; font-weight:600;}
 
   .day-group{margin-bottom:6px;}
   .day-label{
-    font-size:13px; font-weight:700; color:var(--ink-faint);
+    font-size:14px; font-weight:800; color:var(--ink-soft);
     margin:16px 2px 8px; display:flex; justify-content:space-between;
   }
   .tx-row{
     background:var(--card); border-radius:var(--radius-md);
-    padding:13px 14px; margin-bottom:8px;
+    padding:14px 15px; margin-bottom:8px;
     display:flex; align-items:center; gap:12px;
     border:1px solid var(--line-soft);
     cursor:pointer;
@@ -226,23 +233,23 @@
   .tx-row:active{background:var(--card-alt);}
   .tx-dot{width:11px; height:11px; border-radius:50%; flex-shrink:0;}
   .tx-mid{flex:1; min-width:0;}
-  .tx-cat{font-size:15.5px; font-weight:700; color:var(--ink);}
-  .tx-note{font-size:13.5px; color:var(--ink-faint); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .tx-cat{font-size:16.5px; font-weight:800; color:var(--ink);}
+  .tx-note{font-size:14.5px; color:var(--ink-soft); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .tx-pay{
-    font-size:11.5px; color:var(--ink-soft); background:var(--bg-soft);
-    padding:2px 8px; border-radius:999px; display:inline-block; margin-top:4px;
+    font-size:12.5px; color:var(--ink-soft); background:var(--bg-soft);
+    padding:3px 9px; border-radius:999px; display:inline-block; margin-top:4px; font-weight:700;
   }
-  .tx-amt{font-size:17px; font-weight:800; color:var(--ink); white-space:nowrap;}
+  .tx-amt{font-size:18.5px; font-weight:800; color:var(--ink); white-space:nowrap;}
   .empty-state{
-    text-align:center; padding:50px 20px; color:var(--ink-faint);
+    text-align:center; padding:50px 20px; color:var(--ink-soft);
   }
-  .empty-state svg{width:52px; height:52px; stroke:var(--ink-faint); fill:none; stroke-width:1.4; margin-bottom:10px;}
-  .empty-state .t{font-size:15px; font-weight:600;}
+  .empty-state svg{width:52px; height:52px; stroke:var(--ink-soft); fill:none; stroke-width:1.4; margin-bottom:10px;}
+  .empty-state .t{font-size:16px; font-weight:700;}
 
   /* Bar chart */
   .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:12px; cursor:pointer;}
-  .bar-row .m-label{width:38px; font-size:13.5px; font-weight:700; color:var(--ink-soft); flex-shrink:0;}
-  .bar-track{flex:1; background:var(--bg-soft); border-radius:8px; height:26px; position:relative; overflow:hidden;}
+  .bar-row .m-label{width:42px; font-size:15px; font-weight:800; color:var(--ink-soft); flex-shrink:0;}
+  .bar-track{flex:1; background:var(--bg-soft); border-radius:8px; height:28px; position:relative; overflow:hidden;}
   .bar-fill{
     height:100%; border-radius:8px;
     background:var(--accent-soft);
@@ -251,7 +258,7 @@
   }
   .bar-row.selected .bar-fill{background:var(--accent);}
   .bar-row.selected .m-label{color:var(--accent-dark);}
-  .bar-val{font-size:12px; font-weight:800; color:var(--ink); width:64px; text-align:right; flex-shrink:0;}
+  .bar-val{font-size:13.5px; font-weight:800; color:var(--ink); width:72px; text-align:right; flex-shrink:0;}
   .bar-row.selected .bar-val{color:var(--accent-dark);}
 
   .year-select-wrap{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
@@ -270,13 +277,13 @@
 
   .legend-row{
     display:flex; align-items:center; gap:10px;
-    padding:10px 4px; border-bottom:1px solid var(--line-soft);
+    padding:11px 4px; border-bottom:1px solid var(--line-soft);
   }
   .legend-row:last-child{border-bottom:none;}
-  .legend-dot{width:12px;height:12px;border-radius:50%; flex-shrink:0;}
-  .legend-name{flex:1; font-size:15px; font-weight:700;}
-  .legend-pct{font-size:13px; color:var(--ink-faint); width:46px; text-align:right;}
-  .legend-amt{font-size:15px; font-weight:800; width:80px; text-align:right;}
+  .legend-dot{width:13px;height:13px;border-radius:50%; flex-shrink:0;}
+  .legend-name{flex:1; font-size:16px; font-weight:800;}
+  .legend-pct{font-size:14px; color:var(--ink-soft); width:48px; text-align:right; font-weight:600;}
+  .legend-amt{font-size:16px; font-weight:800; width:84px; text-align:right;}
 
   /* Settings */
   .settings-item{
@@ -291,8 +298,8 @@
     flex:1; background:var(--card); border-radius:var(--radius-md);
     padding:14px; text-align:center; border:1px solid var(--line-soft);
   }
-  .stat-box .num{font-size:22px; font-weight:800; color:var(--accent-dark);}
-  .stat-box .lbl{font-size:12px; color:var(--ink-faint); margin-top:2px; font-weight:600;}
+  .stat-box .num{font-size:23px; font-weight:800; color:var(--accent-dark);}
+  .stat-box .lbl{font-size:13px; color:var(--ink-soft); margin-top:2px; font-weight:700;}
 
   .toast{
     position:fixed; left:50%; bottom:calc(90px + var(--safe-bottom));
@@ -425,30 +432,15 @@
     </div>
 
     <div class="card">
-      <h3 style="margin-bottom:6px;">匯出資料</h3>
-      <p style="font-size:13px; color:var(--ink-faint); margin:0 0 14px;">建議先匯出存到 iCloud，方便在電腦上用 Excel 開啟檢視。</p>
       <div class="btn-row">
-        <button class="btn btn-primary" id="exportXlsxBtn">匯出 Excel (.xlsx)</button>
+        <button class="btn btn-primary" id="exportXlsxBtn">匯出資料</button>
       </div>
       <div class="btn-row" style="margin-top:10px;">
-        <button class="btn btn-secondary" id="exportCsvBtn">匯出 CSV</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin-bottom:6px;">匯入資料</h3>
-      <p style="font-size:13px; color:var(--ink-faint); margin:0 0 14px;">可匯入 .xlsx 或 .csv 檔案（欄位：日期、消費金額、類別、備註、付費方式），新資料會加入現有紀錄中。</p>
-      <div class="btn-row">
-        <button class="btn btn-secondary" id="importBtn">選擇檔案匯入</button>
+        <button class="btn btn-secondary" id="importBtn">匯入資料</button>
       </div>
       <input type="file" id="importFileInput" class="file-input-hidden" accept=".xlsx,.xls,.csv">
-    </div>
-
-    <div class="card">
-      <h3 style="margin-bottom:6px; color:var(--danger);">清除資料</h3>
-      <p style="font-size:13px; color:var(--ink-faint); margin:0 0 14px;">將刪除裝置上所有記帳紀錄，請先匯出備份。此動作無法復原。</p>
-      <div class="btn-row">
-        <button class="btn btn-danger" id="clearAllBtn">清除全部資料</button>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-danger" id="clearAllBtn">清除資料</button>
       </div>
     </div>
   </section>
@@ -1109,7 +1101,6 @@ function initEvents(){
     renderMonthDonut();
   });
 
-  document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
   document.getElementById("exportXlsxBtn").addEventListener("click", exportXlsx);
 
   document.getElementById("importBtn").addEventListener("click", function(){
